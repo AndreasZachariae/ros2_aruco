@@ -159,7 +159,11 @@ class ArucoNode(rclpy.node.Node):
 def main():
     rclpy.init()
     node = ArucoNode()
-    rclpy.spin(node)
+
+    try:
+        rclpy.spin(node)
+    except KeyboardInterrupt:
+        node.get_logger().info("KeyboardInterrupt")
 
     node.destroy_node()
     rclpy.shutdown()
