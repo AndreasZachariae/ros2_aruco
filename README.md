@@ -8,6 +8,12 @@ This package depends on a recent version of OpenCV python bindings:
 pip install opencv-contrib-python # or pip3
 ```
 
+## TF2
+```
+ros2 run tf2_tools view_frames.py
+ros2 run tf2_ros tf2_echo [reference_frame] [target_frame]
+```
+
 ## ROS2 API for the ros2_aruco Node
 
 This node locates Aruco AR markers in images and publishes their ids and poses.
