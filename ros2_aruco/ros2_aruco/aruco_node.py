@@ -37,8 +37,9 @@ from ros2_aruco import transformations
 
 from sensor_msgs.msg import CameraInfo
 from sensor_msgs.msg import Image
-from geometry_msgs.msg import PoseArray, Pose
+from geometry_msgs.msg import PoseArray, Pose, TransformStamped
 from ros2_aruco_interfaces.msg import ArucoMarkers
+from tf2_ros import TransformBroadcaster
 
 
 class ArucoNode(rclpy.node.Node):
@@ -92,6 +93,9 @@ class ArucoNode(rclpy.node.Node):
         self.aruco_parameters = cv2.aruco.DetectorParameters_create()
         self.bridge = CvBridge()
 
+        # Initialize the transform broadcaster
+        self.tf_broadcaster = TransformBroadcaster(self)
+
     def info_callback(self, info_msg):
         self.info_msg = info_msg
         self.intrinsic_mat = np.reshape(np.array(self.info_msg.k), (3, 3))
@@ -115,8 +119,7 @@ class ArucoNode(rclpy.node.Node):
         else:
             markers.header.frame_id = self.camera_frame
             pose_array.header.frame_id = self.camera_frame
-            
-            
+
         markers.header.stamp = img_msg.header.stamp
         pose_array.header.stamp = img_msg.header.stamp
 
@@ -151,6 +154,20 @@ class ArucoNode(rclpy.node.Node):
                 pose_array.poses.append(pose)
                 markers.poses.append(pose)
                 markers.marker_ids.append(marker_id[0])
+
+                t = TransformStamped()
+                t.header.stamp = self.get_clock().now().to_msg()
+                t.header.frame_id = 'camera'
+                t.child_frame_id = "marker_" + str(marker_id[0])
+                t.transform.translation.x = tvecs[i][0][0]
+                t.transform.translation.y = tvecs[i][0][1]
+                t.transform.translation.z = tvecs[i][0][2]
+                t.transform.rotation.x = quat[0]
+                t.transform.rotation.y = quat[1]
+                t.transform.rotation.z = quat[2]
+                t.transform.rotation.w = quat[3]
+
+                self.tf_broadcaster.sendTransform(t)
 
             self.poses_pub.publish(pose_array)
             self.markers_pub.publish(markers)
