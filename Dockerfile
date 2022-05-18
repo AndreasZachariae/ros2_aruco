@@ -25,11 +25,8 @@ RUN apt-get update && apt-get install --no-install-recommends -y \
     ros-$ROS_DISTRO-rosbag2-converter-default-plugins-dbgsym \
     ros-$ROS_DISTRO-rosbag2-transport \
     ros-$ROS_DISTRO-rosbag2-transport-dbgsym \
-    && apt-get clean && rm -rf /var/lib/apt/lists/*
-
-RUN apt-get update && apt-get install --no-install-recommends -y \
-    ros-foxy-tf2-tools \
-    ros-foxy-tf-transformations \
+    ros-$ROS_DISTRO-tf2-tools \
+    ros-$ROS_DISTRO-tf-transformations \
     && apt-get clean && rm -rf /var/lib/apt/lists/*
 
 # New versions necessary to prevent "skbuild" error from scikit-build
@@ -74,5 +71,5 @@ RUN sudo sed --in-place --expression \
     '$isource "/home/$USER/ros2_ws/install/setup.bash"' \
     /ros_entrypoint.sh
 
-# CMD ["ros2", "launch", "ros2_aruco", "aruco.launch.py"]
-CMD /bin/bash
+CMD ["ros2", "launch", "ros2_aruco", "aruco.launch.py"]
+# CMD /bin/bash
