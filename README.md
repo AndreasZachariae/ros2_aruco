@@ -1,22 +1,25 @@
-# ros2_aruco
+# ROS2 ArUco
 
 ROS2 Wrapper for OpenCV Aruco Marker Tracking
 
-This package depends on a recent version of OpenCV python bindings:
-
-```
-pip install opencv-contrib-python # or pip3
-```
-
-## TF2
-```
-ros2 run tf2_tools view_frames.py
-ros2 run tf2_ros tf2_echo [reference_frame] [target_frame]
-```
-
-## ROS2 API for the ros2_aruco Node
+Based on https://github.com/JMU-ROBOTICS-VIVA/ros2_aruco
 
 This node locates Aruco AR markers in images and publishes their ids and poses.
+
+## Interface:
+
+- `aruco_node` (ROS2 Foxy python)
+
+    Node for marker detection
+
+- `aruco_generate_marker.py` (python)
+
+    Python script for generating ArUco marker
+
+### PTU Node
+---
+
+#### Topics
 
 Subscriptions:
 * `/camera/image_raw` (`sensor_msgs.msg.Image`)
@@ -26,12 +29,41 @@ Published Topics:
 * `/aruco_poses` (`geometry_msgs.msg.PoseArray`) - Poses of all detected markers (suitable for rviz visualization)
 * `/aruco_markers` (`ros2_aruco_interfaces.msg.ArucoMarkers`) - Provides an array of all poses along with the corresponding marker ids
 
-Parameters:
+#### Parameters
+
 * `marker_size` - size of the markers in meters (default .0625)
 * `aruco_dictionary_id` - dictionary that was used to generate markers (default `DICT_5X5_250`)
 * `image_topic` - image topic to subscribe to (default `/camera/image_raw`)
 * `camera_info_topic` - Camera info topic to subscribe to (default `/camera/camera_info`)
 * `camera_frame` - Camera optical frame to use (default to the frame id provided by the camera info message.)
+
+## How to run:
+
+### Dependencies
+
+- opencv-contrib-python
+
+- cv_bridge
+
+### Installation
+
+    pip install opencv-contrib-python # or pip3
+
+    sudo apt-get install ros-$ROS_DISTRO-cv-bridge 
+
+Build packages with ros
+
+    colcon build --symlink-install
+
+### Start the nodes
+
+    ros2 launch ros2_aruco aruco.launch.py
+
+## TF2
+```
+ros2 run tf2_tools view_frames.py
+ros2 run tf2_ros tf2_echo [reference_frame] [target_frame]
+```
 
 ## Generating Marker Images
 
